@@ -23,7 +23,7 @@ def upgrade():
         )
     op.create_table('daily_balances',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('company_id', sa.Integer, ForeignKey('companies.id'), nullable=False),
+        sa.Column('company_id', sa.Integer, sa.ForeignKey('companies.id'), nullable=False),
         sa.Column('date', sa.Date),
         sa.Column('balance', sa.Float)
     )
