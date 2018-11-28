@@ -15,7 +15,6 @@ down_revision = '038550004839'
 branch_labels = None
 depends_on = None
 
-Session = sa.orm.sessionmaker()
 
 def upgrade():
     op.create_table('accounts',
@@ -24,12 +23,11 @@ def upgrade():
         )
 
     bind = op.get_bind()
-    session = Session(bind=bind)
     
-    session.execute('INSERT INTO accounts(company_id) select id from companies;')
+    op.execute('INSERT INTO accounts(company_id) select id from companies;')
     
-    op.add_column('daily_balances', sa.Column('account_id', sa.Integer, sa.ForeignKey('accounts.id', nullable=True))
-    session.execute('INSERT INTO daily_balances(account_id) select id from accounts where daily_balances.company_id = accounts.company_id;')
+    op.add_column('daily_balances', sa.Column('account_id', sa.Integer, sa.ForeignKey('accounts.id'), nullable=True))
+    op.execute('INSERT INTO daily_balances(account_id) select a.id from accounts a inner join daily_balances d on d.company_id = a.company_id;')
     op.drop_constraint('daily_balances_company_id_fkey', 'daily_balances')
     op.drop_column('daily_balances', 'company_id')
 
